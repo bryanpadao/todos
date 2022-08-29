@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/social/posts/social_post_details_page.dart';
+import 'package:todo_app/social/posts/social_post_page.dart';
 
 import '../../widgets/item_button.dart';
 
@@ -27,40 +29,64 @@ class _SocialPageState extends State<SocialPage> {
       body: Center(
         child: Stack(
           children: [
-            Center(
-              child: SingleChildScrollView(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: postsCollection.snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                      return ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          final data = snapshot.data!.docs[index].data()
-                              as Map<String, dynamic>;
-                          return Column(
-                            children: [
-                              Text(
-                                data['title'],
-                                style: const TextStyle(fontSize: 32),
-                              ),
-                              Text(
-                                data['description'],
-                                style: const TextStyle(fontSize: 32),
-                              ),
-                            ],
+            StreamBuilder<QuerySnapshot>(
+              stream: postsCollection.snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      // Add this to read the document data
+                      final data = snapshot.data!.docs[index].data()
+                          as Map<String, dynamic>;
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) {
+                              return SocialPostDetailsPage(
+                                id: snapshot.data!.docs[index].id,
+                                title: data['title'],
+                                description: data['description'],
+                              );
+                            }),
                           );
                         },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (data['title'] is String)
+                                Text(
+                                  // Add this to read the title property
+                                  data['title'],
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              if (data['description'] is String)
+                                Text(
+                                  // Add this to read the description property
+                                  data['description'],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       );
-                    }
+                    },
+                  );
+                }
 
-                    return const Center(
-                      child: Text('No items found.'),
-                    );
-                  },
-                ),
-              ),
+                return const Center(
+                  child: Text('No items found.'),
+                );
+              },
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -68,7 +94,12 @@ class _SocialPageState extends State<SocialPage> {
                 title: 'New Item',
                 color: Colors.green,
                 onItemPressed: () {
-                  // TODO(joshua): Add button for todo CRUD here
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SocialPostPage(),
+                    ),
+                  );
                 },
               ),
             ),
