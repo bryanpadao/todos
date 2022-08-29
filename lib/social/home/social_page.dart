@@ -37,7 +37,20 @@ class _SocialPageState extends State<SocialPage> {
                         itemCount: snapshot.data!.docs.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          return const Text('Hello world');
+                          final data = snapshot.data!.docs[index].data()
+                              as Map<String, dynamic>;
+                          return Column(
+                            children: [
+                              Text(
+                                data['title'],
+                                style: const TextStyle(fontSize: 32),
+                              ),
+                              Text(
+                                data['description'],
+                                style: const TextStyle(fontSize: 32),
+                              ),
+                            ],
+                          );
                         },
                       );
                     }
