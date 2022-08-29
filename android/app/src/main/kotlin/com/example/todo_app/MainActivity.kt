@@ -1,4 +1,4 @@
-package com.joshuamdeguzman.bootcamp_todos
+package com.bryanpadao.bootcamp_todos
 
 import io.flutter.embedding.android.FlutterActivity
 
